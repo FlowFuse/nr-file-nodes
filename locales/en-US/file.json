@@ -1,0 +1,65 @@
+{
+    "file": {
+        "label": {
+            "write": "write file",
+            "read": "read file",
+            "filename": "Filename",
+            "path": "path",
+            "action": "Action",
+            "addnewline": "Add newline (\\n) to each payload?",
+            "createdir": "Create directory if it doesn't exist?",
+            "outputas": "Output",
+            "breakchunks": "Break into chunks",
+            "breaklines": "Break into lines",
+            "sendError": "Send message on error (legacy mode)",
+            "encoding": "Encoding",
+            "deletelabel": "delete __file__",
+            "utf8String": "UTF8 string",
+            "utf8String_plural": "UTF8 strings",
+            "binaryBuffer": "binary buffer",
+            "binaryBuffer_plural": "binary buffers",
+            "allProps": "include all existing properties in each msg"
+        },
+        "action": {
+            "append": "append to file",
+            "overwrite": "overwrite file",
+            "delete": "delete file"
+        },
+        "output": {
+            "utf8": "a single utf8 string",
+            "buffer": "a single Buffer object",
+            "lines": "a msg per line",
+            "stream": "a stream of Buffers"
+        },
+        "status": {
+            "wrotefile": "wrote to file: __file__",
+            "deletedfile": "deleted file: __file__",
+            "appendedfile": "appended to file: __file__"
+        },
+        "encoding": {
+            "none": "default",
+            "setbymsg": "set by msg.encoding",
+            "native": "Native",
+            "unicode": "Unicode",
+            "japanese": "Japanese",
+            "chinese": "Chinese",
+            "korean": "Korean",
+            "taiwan": "Taiwan/Hong Kong",
+            "windows": "Windows codepages",
+            "iso": "ISO codepages",
+            "ibm": "IBM codepages",
+            "mac": "Mac codepages",
+            "koi8": "KOI8 codepages",
+            "misc": "Miscellaneous"
+        },
+        "errors": {
+            "nofilename": "No filename specified",
+            "invaliddelete": "Warning: Invalid delete. Please use specific delete option in config dialog.",
+            "deletefail": "failed to delete file: __error__",
+            "writefail": "failed to write to file: __error__",
+            "appendfail": "failed to append to file: __error__",
+            "createfail": "failed to create file: __error__"
+        },
+        "tip": "Tip: The filename should be an absolute path, otherwise it will be relative to the working directory of the Node-RED process."
+    }
+}
