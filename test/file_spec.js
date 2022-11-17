@@ -36,9 +36,13 @@ FLOWFORGE_PROJECT_ID: ${ProjectID}
 FLOWFORGE_TEAM_ID: ${TeamID}
 host: '0.0.0.0'
 port: 3001
+base_url: 'http://localhost:3000'
 driver:
-  type: localfs # can be memory or localfs
-  root: ${path.join(cwd, testFilesDir)}
+  # s3, localfs, memory
+  type: localfs
+  options:
+    # root: var/root
+    root: ${path.join(cwd, testFilesDir)}
 `
 
 require('@flowforge/file-storage')
@@ -1135,34 +1139,34 @@ describe('file Nodes', function () {
         })
     })
 
-    // TODO: Fix up tests for file in node
-    describe.skip('file in Node', function () {
+    describe('file in Node', function () {
         const relativePathToFile = '50-file-test-file.txt'
-        const resourcesDir = path.join(__dirname, 'resources')
+        const resourcesDir = testFilesDir
         try {
             fs.mkdirSync(resourcesDir)
-        } catch (error) {
-            // ignore
-        }
-        const fileToTest = path.join(resourcesDir, relativePathToFile)
-        const fileToTest2 = '\t' + path.join(resourcesDir, relativePathToFile) + '\r\n'
+        } catch (_error) { /* IGNORE */ }
+        try {
+            fs.mkdirSync(testFilesRealDir, { recursive: true })
+        } catch (_error) { /* IGNORE */ }
+        const fileToTest = relativePathToFile
+        const fileToTest2 = '\t' + relativePathToFile + '\r\n'
         const wait = 150
 
         beforeEach(function (done) {
-            fs.writeFileSync(fileToTest, 'File message line 1\nFile message line 2\n')
+            fs.writeFileSync(path.join(testFilesRealDir, fileToTest), 'File message line 1\nFile message line 2\n')
             helper.startServer(done)
         })
 
         afterEach(function (done) {
             delete RED.settings.fileWorkingDirectory
             helper.unload().then(function () {
-                fs.unlinkSync(fileToTest)
+                fs.unlinkSync(path.join(testFilesRealDir, fileToTest))
                 helper.stopServer(done)
             })
         })
 
         it('should be loaded', function (done) {
-            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: fileToTest, format: 'utf8' }]
+            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: fileToTest, format: 'utf8' }, { id: 'n2', type: 'helper' }]
             helper.load(fileNode, flow, function () {
                 const n1 = helper.getNode('fileInNode1')
                 n1.should.have.property('name', 'fileInNode')
@@ -1209,10 +1213,17 @@ describe('file Nodes', function () {
         })
 
         it('should read in a file using fileWorkingDirectory to set cwd', function (done) {
-            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: relativePathToFile, format: 'utf8', wires: [['n2']] },
+            const workingDirectory = 'my-working-dir'
+            const realWorkPath = path.join(testFilesRealDir, workingDirectory)
+            const realFilePath = path.join(realWorkPath, fileToTest)
+            try {
+                fs.mkdirSync(realWorkPath)
+            } catch (_error) { /* ignore */ }
+            fs.writeFileSync(realFilePath, 'File message line 1\nFile message line 2\n')
+            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: fileToTest, format: 'utf8', wires: [['n2']] },
                 { id: 'n2', type: 'helper' }]
             helper.load(fileNode, flow, function () {
-                RED.settings.fileWorkingDirectory = resourcesDir
+                RED.settings.fileWorkingDirectory = 'my-working-dir'
                 const n1 = helper.getNode('fileInNode1')
                 const n2 = helper.getNode('n2')
                 n2.on('input', function (msg) {
@@ -1291,7 +1302,8 @@ describe('file Nodes', function () {
         it('should read in a file with empty line and output split lines with parts', function (done) {
             const data = ['-', '', '-', '']
             const line = data.join('\n')
-            fs.writeFileSync(fileToTest, line)
+            const realFileToTest = path.join(testFilesRealDir, fileToTest)
+            fs.writeFileSync(realFileToTest, line)
             const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: fileToTest, format: 'lines', wires: [['n2']] },
                 { id: 'n2', type: 'helper' }]
             helper.load(fileNode, flow, function () {
@@ -1429,8 +1441,8 @@ describe('file Nodes', function () {
             function checkReadWithEncoding (enc, data, done) {
                 const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: fileToTest, format: 'utf8', encoding: enc, wires: [['n2']] },
                     { id: 'n2', type: 'helper' }]
-
-                fs.writeFileSync(fileToTest, encode(data, enc))
+                const realFileToTest = path.join(testFilesRealDir, fileToTest)
+                fs.writeFileSync(realFileToTest, encode(data, enc))
                 helper.load(fileNode, flow, function () {
                     const n1 = helper.getNode('fileInNode1')
                     const n2 = helper.getNode('n2')
