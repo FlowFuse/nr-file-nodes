@@ -1,5 +1,5 @@
 {
-    "name": "@flowforge/flowforge-nr-files",
+    "name": "@flowforge/nr-file-nodes",
     "version": "0.0.1",
     "description": "Node-RED file nodes packaged for FlowForge",
     "main": "index.js",
@@ -39,6 +39,11 @@
     "devDependencies": {
         "@flowforge/file-storage": "file:../flowforge-file-storage",
         "node-red": "^3.0.2",
-        "node-red-node-test-helper": "^0.3.0"
+        "node-red-node-test-helper": "^0.3.0",
+        "fs-extra": "^10.1.0",
+        "sinon": "^13.0.1",
+        "mocha": "^10.1.0",
+        "mocha-cli": "^1.0.1"
+
     }
 }
