@@ -17,15 +17,25 @@
 const Stream = require('stream')
 const got = require('got')
 
-module.exports = function (teamId, projectId) {
+module.exports = function (RED, _teamID, _projectID, _token) {
     'use strict'
+    const teamID = _teamID || (process.env.FF_FS_TEST_CONFIG ? process.env.FLOWFORGE_TEAM_ID : null) || RED.settings.flowforge?.teamID
+    const projectID = _projectID || (process.env.FF_FS_TEST_CONFIG ? process.env.FLOWFORGE_PROJECT_ID : null) || RED.settings.flowforge?.projectID
+    const projectToken = _token || (process.env.FF_FS_TEST_CONFIG ? process.env.FLOWFORGE_PROJECT_TOKEN : null) || RED.settings.flowforge?.projectToken
+    const fileStoreURL = RED.settings.flowforge?.fileStore?.url || 'http://127.0.0.1:3001'
 
-    const makeURL = (filename) => {
-        const fn = encodeURI(filename.replace(/\\/g, '/'))
-        const ti = encodeURI(teamId)
-        const pi = encodeURI(projectId)
-        return `http://127.0.0.1:3001/v1/files/${ti}/${pi}/${fn}`
-    }
+    const client = got.extend({
+        // prefixUrl: `${app.config.base_url}/account/check/project`,
+        prefixUrl: `${fileStoreURL}/v1/files/${teamID}/${projectID}`,
+        headers: {
+            'user-agent': 'FlowForge Node-RED File Nodes for Storage Server',
+            authorization: 'Bearer ' + projectToken
+        },
+        timeout: {
+            request: 500
+        }
+    })
+
     const normaliseError = (err, filename) => {
         let niceError = new Error('Unknown Error')
         let statusCode = null
@@ -59,8 +69,7 @@ module.exports = function (teamId, projectId) {
 
     return {
         unlink (filename, callback) {
-            const url = makeURL(filename)
-            got.delete(url)
+            client.delete(filename)
                 .then(() => {
                     callback()
                 })
@@ -69,13 +78,12 @@ module.exports = function (teamId, projectId) {
                 })
         },
         ensureDir (dirName, callback) {
-            const url = makeURL(dirName)
             const options = {
                 headers: {
                     FF_MODE: 'ensureDir'
                 }
             }
-            got.post(url, options)
+            client.post(dirName, options)
                 .then((body) => {
                     callback(null, (body && body.rawBody) || null)
                 })
@@ -84,14 +92,13 @@ module.exports = function (teamId, projectId) {
                 })
         },
         writeFile (filename, buffer, callback) {
-            const url = makeURL(filename)
             const options = {
                 headers: {
                     'Content-Type': 'application/octet-stream'
                 },
                 body: buffer
             }
-            got.post(url, options)
+            client.post(filename, options)
                 .then((body) => {
                     callback(null, (body && body.rawBody) || null)
                 })
@@ -100,7 +107,6 @@ module.exports = function (teamId, projectId) {
                 })
         },
         appendFile (filename, buffer, callback) {
-            const url = makeURL(filename)
             const options = {
                 headers: {
                     'Content-Type': 'application/octet-stream',
@@ -108,7 +114,7 @@ module.exports = function (teamId, projectId) {
                 },
                 body: buffer
             }
-            got.post(url, options)
+            client.post(filename, options)
                 .then((body) => {
                     callback(null, (body && body.rawBody) || null)
                 })
@@ -117,13 +123,12 @@ module.exports = function (teamId, projectId) {
                 })
         },
         readFile (filename, callback) {
-            const url = makeURL(filename)
             const options = {
                 headers: {
                     'Content-Type': 'application/octet-stream'
                 }
             }
-            got.get(url, options)
+            client.get(filename, options)
                 .then((body) => {
                     callback(null, (body && body.rawBody) || null)
                 })
