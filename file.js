@@ -45,7 +45,7 @@ module.exports = function (RED) {
         this.createDir = n.createDir || false
         this.encoding = n.encoding || 'none'
         const node = this
-        const fs = VFS(process.env.FLOWFORGE_TEAM_ID, process.env.FLOWFORGE_PROJECT_ID)
+        const fs = VFS(RED)
         node.wstream = null
         node.msgQueue = []
         node.closing = false
@@ -235,7 +235,7 @@ module.exports = function (RED) {
         if (this.format === 'lines') { this.chunk = true }
         if (this.format === 'stream') { this.chunk = true }
         const node = this
-        const fs = VFS(process.env.FLOWFORGE_TEAM_ID, process.env.FLOWFORGE_PROJECT_ID)
+        const fs = VFS(RED)
         this.on('input', function (msg, nodeSend, nodeDone) {
             let filename = node.filename || ''
             // Pre V3 compatibility - if filenameType is empty, do in place upgrade
