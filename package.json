@@ -4,8 +4,7 @@
     "description": "Node-RED file nodes packaged for FlowForge",
     "main": "index.js",
     "scripts": {
-        "test": "mocha 'test/**/*_spec.js' --timeout 120000",
-        "_test": "mocha 'test/**/*_spec.js' --timeout 5000"
+        "test": "mocha 'test/**/*_spec.js' --timeout 5000"
     },
     "keywords": [
         "flowforge",
@@ -20,15 +19,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/flowforge/flowforge.git"
+        "url": "git+https://github.com/flowforge/nr-file-nodes.git"
     },
     "author": {
         "name": "FlowFlow Inc."
     },
     "bugs": {
-        "url": "https://github.com/flowforge/flowforge-nr-files/issues"
+        "url": "https://github.com/flowforge/nr-file-nodes/issues"
     },
-    "homepage": "https://github.com/flowforge/flowforge-nr-files#readme",
+    "homepage": "https://github.com/flowforge/nr-file-nodes#readme",
     "dependencies": {
         "got": "11.8.5",
         "iconv-lite": "0.6.3"
@@ -37,13 +36,12 @@
         "node": ">=16.x"
     },
     "devDependencies": {
-        "@flowforge/file-storage": "file:../flowforge-file-storage",
+        "@flowforge/file-storage": "^0.0.1",
         "node-red": "^3.0.2",
         "node-red-node-test-helper": "^0.3.0",
         "fs-extra": "^10.1.0",
         "sinon": "^13.0.1",
         "mocha": "^10.1.0",
         "mocha-cli": "^1.0.1"
-
     }
 }
