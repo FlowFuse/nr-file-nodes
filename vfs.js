@@ -33,6 +33,9 @@ module.exports = function (RED, _teamID, _projectID, _token) {
         },
         timeout: {
             request: 500
+        },
+        retry: {
+            limit: 0
         }
     })
 
