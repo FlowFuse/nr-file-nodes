@@ -16,6 +16,17 @@
 
 module.exports = function (RED) {
     'use strict'
+
+    // Do not register nodes in runtime if settings are not provided
+    if (
+        !RED.settings.flowforge ||
+        !RED.settings.flowforge.projectID ||
+        !RED.settings.flowforge.teamID ||
+        !RED.settings.flowforge.fileStore ||
+        !RED.settings.flowforge.fileStore.url
+    ) {
+        throw new Error('FlowForge file nodes cannot be loaded without required settings')
+    }
     const VFS = require('./vfs')
     const os = require('os')
     const path = require('path')
