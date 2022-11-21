@@ -21,8 +21,11 @@ module.exports = function (RED, _teamID, _projectID, _token) {
     'use strict'
     const teamID = _teamID || (process.env.FF_FS_TEST_CONFIG ? process.env.FLOWFORGE_TEAM_ID : null) || RED.settings.flowforge?.teamID
     const projectID = _projectID || (process.env.FF_FS_TEST_CONFIG ? process.env.FLOWFORGE_PROJECT_ID : null) || RED.settings.flowforge?.projectID
-    const projectToken = _token || (process.env.FF_FS_TEST_CONFIG ? process.env.FLOWFORGE_PROJECT_TOKEN : null) || RED.settings.flowforge?.projectToken
+    const projectToken = _token || (process.env.FF_FS_TEST_CONFIG ? process.env.FLOWFORGE_PROJECT_TOKEN : null) || RED.settings.flowforge?.fileStore?.token
     const fileStoreURL = RED.settings.flowforge?.fileStore?.url || 'http://127.0.0.1:3001'
+
+    console.log(RED.settings.flowforge)
+    console.log(projectToken)
 
     const client = got.extend({
         // prefixUrl: `${app.config.base_url}/account/check/project`,
