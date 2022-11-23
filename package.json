@@ -1,6 +1,6 @@
 {
     "name": "@flowforge/nr-file-nodes",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Node-RED file nodes packaged for FlowForge",
     "main": "index.js",
     "scripts": {
@@ -36,7 +36,7 @@
         "node": ">=16.x"
     },
     "devDependencies": {
-        "@flowforge/file-server": "^0.0.1",
+        "@flowforge/file-server": "^0.0.3",
         "node-red": "^3.0.2",
         "node-red-node-test-helper": "^0.3.0",
         "fs-extra": "^10.1.0",
