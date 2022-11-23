@@ -97,6 +97,9 @@ module.exports = function (RED) {
                     node.tout = null
                 }, 333)
             }
+            if (path.isAbsolute(fullFilename)) {
+                fullFilename = fullFilename.slice(1)
+            }
             if (filename === '') {
                 node.warn(RED._('file.errors.nofilename'))
                 done()
@@ -281,6 +284,9 @@ module.exports = function (RED) {
             }
             if (!node.filename) {
                 node.status({ fill: 'grey', shape: 'dot', text: filename })
+            }
+            if (path.isAbsolute(fullFilename)) {
+                fullFilename = fullFilename.slice(1)
             }
             if (filename === '') {
                 node.warn(RED._('file.errors.nofilename'))
