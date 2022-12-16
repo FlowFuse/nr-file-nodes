@@ -4,7 +4,7 @@
     "description": "Node-RED file nodes packaged for FlowForge",
     "main": "index.js",
     "scripts": {
-        "test": "npm run test:memory && npm run test:files",
+        "test": "npm run test:files && npm run test:memory",
         "test:memory": "mocha 'test/memory_spec.js' --timeout 5000",
         "test:files": "mocha 'test/file_spec.js' --timeout 5000",
         "lint": "eslint -c .eslintrc *.js",

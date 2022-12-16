@@ -36,6 +36,13 @@ const authServerURL = `http://${fileServerHost}:${authServerPort}`
 describe('File Nodes with memory backed filer-server', function () {
     let app, authServer
     before(async function () {
+        authServer = setup.authServer({
+            port: authServerPort,
+            authConfig: [
+                { token: 'test-token-1', projectId: ProjectID },
+                { token: 'test-token-2', projectId: 'test-project-2' }
+            ]
+        })
         app = await setup.setupFileServerApp({
             teamId: TeamID,
             projectId: ProjectID,
@@ -45,13 +52,8 @@ describe('File Nodes with memory backed filer-server', function () {
             base_url: authServerURL,
             driverType
         })
-        authServer = setup.authServer({
-            port: authServerPort,
-            authConfig: [
-                { token: 'test-token-1', projectId: ProjectID },
-                { token: 'test-token-2', projectId: 'test-project-2' }
-            ]
-        })
+        // sleep 500ms to allow the auth server to start
+        await new Promise(resolve => setTimeout(resolve, 500))
     })
 
     after(async function () {
