@@ -42,20 +42,28 @@ module.exports = function (RED, _teamID, _projectID, _token) {
     const normaliseError = (err, filename) => {
         let niceError = new Error('Unknown Error')
         let statusCode = null
+        let childErr = {}
         niceError.code = 'UNKNOWN'
         if (typeof err === 'string') {
             niceError = new Error(err)
         } else if (err?._normalised) {
-            return err // already normailised
+            return err // already normalised
         }
         if (err?.response) {
             statusCode = err.response.statusCode
             if (err.response.body) {
-                let childErr = {}
                 try {
-                    childErr = { ...JSON.parse(err.response.body) }
+                    if (err.response.body && typeof err.response.body === 'object') {
+                        childErr = err.response.body
+                    } else {
+                        childErr = { ...JSON.parse(err.response.body.toString()) }
+                    }
                 } catch (_error) { /* do nothing */ }
-                niceError.message = childErr.message || niceError.message
+                if (!childErr || typeof childErr !== 'object') {
+                    childErr = {}
+                }
+                Object.assign(niceError, childErr)
+                niceError.message = childErr.error || childErr.message || niceError.message
                 niceError.code = childErr.code || niceError.code
                 niceError.stack = childErr.stack || niceError.stack
             }
@@ -63,6 +71,12 @@ module.exports = function (RED, _teamID, _projectID, _token) {
         if (/route.*not found/gi.test(niceError.message) && statusCode === 404) {
             niceError.message = 'ENOENT: no such file or directory' + (filename ? `, '${filename}'` : '')
             niceError.code = 'ENOENT'
+        } else if (statusCode === 413) {
+            niceError.message = 'Quota exceeded.'
+            if (childErr && childErr.limit) {
+                niceError.message += ` The current limit is ${childErr.limit} bytes.`
+            }
+            niceError.code = 'quota_exceeded'
         }
         niceError.stack = niceError.stack || err.stack
         niceError.code = niceError.code || err.code
