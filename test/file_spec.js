@@ -22,45 +22,62 @@ const iconv = require('iconv-lite')
 const helper = require('node-red-node-test-helper')
 const fileNode = require('../file.js')
 const RED = require('node-red/lib/red')
-const TeamID = 'test-team'
-const ProjectID = 'test-project'
+const TeamID = 'test-team-1'
+const ProjectID = 'test-project-1'
 const cwd = process.cwd()
 const testFilesDir = path.join('test', 'resources')
 const testFilesRealDir = path.join(cwd, testFilesDir, TeamID, ProjectID)
-// prepare env for testing
-process.env.FLOWFORGE_TEAM_ID = TeamID
-process.env.FLOWFORGE_PROJECT_ID = ProjectID
-process.env.FF_FS_TEST_CONFIG = `
-FLOWFORGE_HOME: ${cwd}
-FLOWFORGE_PROJECT_ID: ${ProjectID}
-FLOWFORGE_TEAM_ID: ${TeamID}
-host: '0.0.0.0'
-port: 3001
-base_url: 'http://localhost:3000'
-driver:
-  # s3, localfs, memory
-  type: localfs
-  options:
-    # root: var/root
-    root: ${path.join(cwd, testFilesDir)}
-`
+const setup = require('./setup')
+const util = require('util')
 
-require('@flowforge/file-storage')
+// Setup the test environment
+const driverType = 'localfs'
+const fileServerPort = 3051
+const authServerPort = 3052
+const fileServerHost = '127.0.0.1'
+const fileServerURL = `http://${fileServerHost}:${fileServerPort}`
+const authServerURL = `http://${fileServerHost}:${authServerPort}`
 
-describe('file Nodes', function () {
+describe('File Nodes with file backed filer-server', function () {
+    let app, authServer
+    before(async function () {
+        app = await setup.setupFileServerApp({
+            teamId: TeamID,
+            projectId: ProjectID,
+            token: 'test-token-1',
+            host: fileServerHost,
+            port: fileServerPort,
+            base_url: authServerURL,
+            driverType,
+            root: path.join(cwd, testFilesDir)
+        })
+        authServer = setup.authServer({
+            port: authServerPort,
+            authConfig: [
+                { token: 'test-token-1', projectId: ProjectID },
+                { token: 'test-token-2', projectId: 'test-project-2' }
+            ]
+        })
+    })
+
+    after(async function () {
+        if (authServer) {
+            const closeAuthServer = util.promisify(authServer.close).bind(authServer)
+            await closeAuthServer()
+            authServer = null
+        }
+        if (app) {
+            await app.close()
+            app = null
+        }
+    })
+
     function encode (s, enc) {
         if (enc === 'none') {
             return Buffer.from(s)
         }
         return iconv.encode(s, enc)
     }
-
-    // function decode (data, enc) {
-    //     if (enc === 'none') {
-    //         return data.toString()
-    //     }
-    //     return iconv.decode(data, enc)
-    // }
 
     describe('file out Node', function () {
         const relativePathToFile = '50-file-test-file.txt'
@@ -76,6 +93,14 @@ describe('file Nodes', function () {
         beforeEach(function (done) {
             // fs.writeFileSync(fileToTest, "File message line 1\File message line 2\n");
             process.env.TEST_FILE = fileToTest
+            RED.settings.flowforge = {
+                teamID: TeamID,
+                projectID: ProjectID,
+                fileStore: {
+                    url: fileServerURL,
+                    token: 'test-token-1'
+                }
+            }
             helper.startServer(done)
         })
 
@@ -496,6 +521,23 @@ describe('file Nodes', function () {
             })
         })
 
+        it('should not be able to write beyond set quota', function (done) {
+            const flow = [{ id: 'fileNode1', type: 'file', name: 'fileNode', filename: 'test.txt', appendNewline: true, overwriteFile: true, wires: [['helperNode1']] },
+                { id: 'helperNode1', type: 'helper' },
+                { id: 'catchNode1', type: 'catch', wires: [['helperNode1']] }]
+            helper.load(fileNode, flow, function () {
+                const n1 = helper.getNode('fileNode1')
+                const n2 = helper.getNode('helperNode1')
+                n2.on('input', function (msg) {
+                    msg.should.have.property('error')
+                    msg.error.should.have.property('source').and.be.an.Object()
+                    msg.error.source.should.have.property('id', 'fileNode1')
+                    done()
+                })
+                n1.emit('input', { topic: 'test', payload: Buffer.from(Array(3000)).fill('a') })
+            })
+        })
+
         // TODO: Add capability to drivers or accept different behaviour
         it.skip('should fail to write to a ro file', function (done) {
             // Stub file write so we can make writes fail
@@ -690,7 +732,7 @@ describe('file Nodes', function () {
             const flow = [{ id: 'fileNode1', type: 'file', name: 'fileNode', appendNewline: true, overwriteFile: true, createDir: true, wires: [['helperNode1']] },
                 { id: 'helperNode1', type: 'helper' }]
             const tmp_path = 'tmp'
-            const len = 1024 * 1024 * 10 // 10MB
+            const len = 250
             const file_count = 5
             helper.load(fileNode, flow, function () {
                 const n1 = helper.getNode('fileNode1')
@@ -733,7 +775,7 @@ describe('file Nodes', function () {
             const flow = [{ id: 'fileNode1', type: 'file', name: 'fileNode', appendNewline: true, overwriteFile: true, createDir: true, wires: [['helperNode1']] },
                 { id: 'helperNode1', type: 'helper' }]
             const tmp_path = 'tmp'
-            const len = 1024 * 1024 * 10
+            const len = 250
             const file_count = 5
             helper.load(fileNode, flow, function () {
                 const n1 = helper.getNode('fileNode1')
