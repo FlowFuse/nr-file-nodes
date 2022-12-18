@@ -660,7 +660,6 @@ describe('File Nodes with file backed filer-server', function () {
                     try {
                         const f = fs.readFileSync(realFileToTest).toString()
                         fs.unlinkSync(realFileToTest)
-                        f.should.have.length(7)
                         if (os.type() !== 'Windows_NT') {
                             f.should.have.length(6)
                             f.should.equal('test2\n')
@@ -713,7 +712,6 @@ describe('File Nodes with file backed filer-server', function () {
                     try {
                         const f = fs.readFileSync(realFileToTest).toString()
                         fs.unlinkSync(realFileToTest)
-                        f.should.have.length(7)
                         if (os.type() !== 'Windows_NT') {
                             f.should.have.length(6)
                             f.should.equal('test2\n')
