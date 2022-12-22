@@ -40,15 +40,15 @@ module.exports = function (RED, _teamID, _projectID, _token) {
     })
 
     const normaliseError = (err, filename) => {
-        let niceError = new Error('Unknown Error')
+        const niceError = new Error('Unknown Error')
         let statusCode = null
         let childErr = {}
-        niceError.code = 'UNKNOWN'
         if (typeof err === 'string') {
-            niceError = new Error(err)
+            err = new Error(err)
         } else if (err?._normalised) {
             return err // already normalised
         }
+        err = err || {}
         if (err?.response) {
             statusCode = err.response.statusCode
             if (err.response.body) {
@@ -68,6 +68,11 @@ module.exports = function (RED, _teamID, _projectID, _token) {
                 niceError.stack = childErr.stack || niceError.stack
             }
         }
+        if (err?.code === 'ETIMEDOUT') {
+            niceError.code = err.code
+            niceError.message = err.message
+            niceError.stack = err.stack
+        }
         if (/route.*not found/gi.test(niceError.message) && statusCode === 404) {
             niceError.message = 'ENOENT: no such file or directory' + (filename ? `, '${filename}'` : '')
             niceError.code = 'ENOENT'
@@ -79,7 +84,7 @@ module.exports = function (RED, _teamID, _projectID, _token) {
             niceError.code = 'quota_exceeded'
         }
         niceError.stack = niceError.stack || err.stack
-        niceError.code = niceError.code || err.code
+        niceError.code = niceError.code || err.code || 'unexpected_error'
         niceError._normalised = true // prevent double processing
         return niceError
     }
