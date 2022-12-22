@@ -1,6 +1,6 @@
 {
     "name": "@flowforge/nr-file-nodes",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Node-RED file nodes packaged for FlowForge",
     "main": "index.js",
     "scripts": {
