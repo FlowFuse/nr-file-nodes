@@ -32,7 +32,7 @@ module.exports = function (RED, _teamID, _projectID, _token) {
             authorization: 'Bearer ' + projectToken
         },
         timeout: {
-            request: 500
+            request: 3000
         },
         retry: {
             limit: 0
