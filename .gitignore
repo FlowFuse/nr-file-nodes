@@ -2,7 +2,6 @@ var/
 test/resources
 /node_modules/
 docs/jsdoc
-package-lock.json
 
 *.env
 *.env.local
