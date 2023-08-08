@@ -19,4 +19,4 @@ jobs:
     uses: 'flowforge/github-actions-workflows/.github/workflows/publish_node_package.yml@fix-publish-with-npm'
     with:
       package_name: nr-file-nodes
-      publish_package: false
+      publish_package: true
