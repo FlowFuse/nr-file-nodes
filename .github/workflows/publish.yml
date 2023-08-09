@@ -13,11 +13,11 @@ on:
 jobs:
   build:
     uses: 'flowforge/github-actions-workflows/.github/workflows/build_node_package.yml@main'
+    run_tests: true
 
   publish:
     needs: build
-    uses: 'flowforge/github-actions-workflows/.github/workflows/publish_node_package.yml@fix-publish-with-npm'
+    uses: 'flowforge/github-actions-workflows/.github/workflows/publish_node_package.yml@main'
     with:
       package_name: nr-file-nodes
       publish_package: true
-
