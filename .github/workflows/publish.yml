@@ -13,7 +13,8 @@ on:
 jobs:
   build:
     uses: 'flowforge/github-actions-workflows/.github/workflows/build_node_package.yml@main'
-    run_tests: true
+    with:
+      run_tests: true
 
   publish:
     needs: build
