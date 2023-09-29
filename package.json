@@ -1,7 +1,7 @@
 {
     "name": "@flowforge/nr-file-nodes",
     "version": "0.0.3",
-    "description": "Node-RED file nodes packaged for FlowForge",
+    "description": "Node-RED file nodes packaged for FlowFuse",
     "main": "index.js",
     "scripts": {
         "test": "npm run test:files && npm run test:memory",
@@ -11,7 +11,7 @@
         "lint:fix": "eslint -c .eslintrc *.js --fix"
     },
     "keywords": [
-        "flowforge",
+        "FlowFuse",
         "node-red",
         "filesystem"
     ],
@@ -23,15 +23,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/flowforge/nr-file-nodes.git"
+        "url": "git+https://github.com/FlowFuse/nr-file-nodes.git"
     },
     "author": {
         "name": "FlowFlow Inc."
     },
     "bugs": {
-        "url": "https://github.com/flowforge/nr-file-nodes/issues"
+        "url": "https://github.com/FlowFuse/nr-file-nodes/issues"
     },
-    "homepage": "https://github.com/flowforge/nr-file-nodes#readme",
+    "homepage": "https://github.com/FlowFuse/nr-file-nodes#readme",
     "dependencies": {
         "got": "11.8.5",
         "iconv-lite": "0.6.3"
