@@ -8,11 +8,11 @@ time as the built-in Node-RED file nodes. To use these nodes, you must exclude
 ### Nodes
 
 #### `file`
-A file node for writing to persistent storage provided by a `@FlowForge/file-storage` server
+A file node for writing to persistent storage provided by a `@FlowFuse/file-storage` server
 
 
 #### `file in`
-A file node for reading from persistent storage provided by a `@FlowForge/file-storage` server
+A file node for reading from persistent storage provided by a `@FlowFuse/file-storage` server
 
 
 ### Notes
