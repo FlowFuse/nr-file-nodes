@@ -1,6 +1,6 @@
 {
-    "name": "@flowforge/nr-file-nodes",
-    "version": "0.0.3",
+    "name": "@flowfuse/nr-file-nodes",
+    "version": "0.0.4",
     "description": "Node-RED file nodes packaged for FlowFuse",
     "main": "index.js",
     "scripts": {
@@ -26,7 +26,7 @@
         "url": "git+https://github.com/FlowFuse/nr-file-nodes.git"
     },
     "author": {
-        "name": "FlowFlow Inc."
+        "name": "FlowFuse Inc."
     },
     "bugs": {
         "url": "https://github.com/FlowFuse/nr-file-nodes/issues"

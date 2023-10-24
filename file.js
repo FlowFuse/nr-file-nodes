@@ -25,7 +25,7 @@ module.exports = function (RED) {
         !RED.settings.flowforge.fileStore ||
         !RED.settings.flowforge.fileStore.url
     ) {
-        throw new Error('FlowForge file nodes cannot be loaded without required settings')
+        throw new Error('FlowFuse file nodes cannot be loaded without required settings')
     }
     const VFS = require('./vfs')
     const os = require('os')
