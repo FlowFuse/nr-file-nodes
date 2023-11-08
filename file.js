@@ -63,7 +63,7 @@ module.exports = function (RED) {
         node.closeCallback = null
 
         function processMsg (msg, nodeSend, done) {
-            let filename = node.filename || ''
+            const filename = node.filename || ''
             // Pre V3 compatibility - if filenameType is empty, do in place upgrade
             if (typeof node.filenameType === 'undefined' || node.filenameType === '') {
                 // existing node AND filenameType is not set - inplace (compatible) upgrade
@@ -268,7 +268,7 @@ module.exports = function (RED) {
             RED.util.evaluateNodeProperty(node.filename, node.filenameType, node, msg, (err, value) => {
                 if (err) {
                     node.error(err, msg)
-                    return done()
+                    return nodeDone()
                 } else {
                     filename = (value || '').replace(/\t|\r|\n/g, '')
                     completeProcessMsg(msg, nodeSend, filename, nodeDone)
