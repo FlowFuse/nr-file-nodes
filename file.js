@@ -63,7 +63,7 @@ module.exports = function (RED) {
         node.closeCallback = null
 
         function processMsg (msg, nodeSend, done) {
-            let filename = node.filename || ''
+            const filename = node.filename || ''
             // Pre V3 compatibility - if filenameType is empty, do in place upgrade
             if (typeof node.filenameType === 'undefined' || node.filenameType === '') {
                 // existing node AND filenameType is not set - inplace (compatible) upgrade
@@ -80,9 +80,12 @@ module.exports = function (RED) {
                     node.error(err, msg)
                     return done()
                 } else {
-                    filename = value
+                    completeProcessMsg(msg, nodeSend, value, done)
                 }
             })
+        }
+
+        function completeProcessMsg (msg, nodeSend, filename, done) {
             filename = filename || ''
             msg.filename = filename
             let fullFilename = filename
@@ -262,61 +265,73 @@ module.exports = function (RED) {
                     node.filenameType = 'str'
                 }
             }
-            let propertyError = false
             RED.util.evaluateNodeProperty(node.filename, node.filenameType, node, msg, (err, value) => {
                 if (err) {
                     node.error(err, msg)
-                    propertyError = true
-                    // return done()
+                    return nodeDone()
                 } else {
                     filename = (value || '').replace(/\t|\r|\n/g, '')
+                    completeProcessMsg(msg, nodeSend, filename, nodeDone)
                 }
             })
-            if (propertyError) {
-                return
-            }
-            filename = filename || ''
-            let fullFilename = filename
+            function completeProcessMsg (msg, nodeSend, filename, nodeDone) {
+                filename = filename || ''
+                let fullFilename = filename
 
-            if (filename && RED.settings.fileWorkingDirectory && !path.isAbsolute(filename)) {
-                // fullFilename = path.resolve(path.join(RED.settings.fileWorkingDirectory, filename))
-                fullFilename = path.join(RED.settings.fileWorkingDirectory, filename)
-            }
-            if (!node.filename) {
-                node.status({ fill: 'grey', shape: 'dot', text: filename })
-            }
-            if (path.isAbsolute(fullFilename)) {
-                fullFilename = fullFilename.slice(1)
-            }
-            if (filename === '') {
-                node.warn(RED._('file.errors.nofilename'))
-                nodeDone()
-            } else {
-                msg.filename = filename
-                let lines = Buffer.from([])
-                let spare = ''
-                let count = 0
-                let type = 'buffer'
-                let ch = ''
-                if (node.format === 'lines') {
-                    ch = '\n'
-                    type = 'string'
+                if (filename && RED.settings.fileWorkingDirectory && !path.isAbsolute(filename)) {
+                    // fullFilename = path.resolve(path.join(RED.settings.fileWorkingDirectory, filename))
+                    fullFilename = path.join(RED.settings.fileWorkingDirectory, filename)
                 }
-                let getout = false
+                if (!node.filename) {
+                    node.status({ fill: 'grey', shape: 'dot', text: filename })
+                }
+                if (path.isAbsolute(fullFilename)) {
+                    fullFilename = fullFilename.slice(1)
+                }
+                if (filename === '') {
+                    node.warn(RED._('file.errors.nofilename'))
+                    nodeDone()
+                } else {
+                    msg.filename = filename
+                    let lines = Buffer.from([])
+                    let spare = ''
+                    let count = 0
+                    let type = 'buffer'
+                    let ch = ''
+                    if (node.format === 'lines') {
+                        ch = '\n'
+                        type = 'string'
+                    }
+                    let getout = false
 
-                const rs = fs.createReadStream(fullFilename)
-                    .on('readable', function () {
-                        let chunk
-                        let m
-                        const hwm = rs._readableState.highWaterMark
-                        while ((chunk = rs.read()) !== null) {
-                            if (node.chunk === true) {
-                                getout = true
-                                if (node.format === 'lines') {
-                                    spare += decode(chunk, node.encoding)
-                                    const bits = spare.split('\n')
-                                    let i = 0
-                                    for (i = 0; i < bits.length - 1; i++) {
+                    const rs = fs.createReadStream(fullFilename)
+                        .on('readable', function () {
+                            let chunk
+                            let m
+                            const hwm = rs._readableState.highWaterMark
+                            while ((chunk = rs.read()) !== null) {
+                                if (node.chunk === true) {
+                                    getout = true
+                                    if (node.format === 'lines') {
+                                        spare += decode(chunk, node.encoding)
+                                        const bits = spare.split('\n')
+                                        let i = 0
+                                        for (i = 0; i < bits.length - 1; i++) {
+                                            m = {}
+                                            if (node.allProps === true) {
+                                                m = RED.util.cloneMessage(msg)
+                                            } else {
+                                                m.topic = msg.topic
+                                                m.filename = msg.filename
+                                            }
+                                            m.payload = bits[i]
+                                            m.parts = { index: count, ch, type, id: msg._msgid }
+                                            count += 1
+                                            nodeSend(m)
+                                        }
+                                        spare = bits[i]
+                                    }
+                                    if (node.format === 'stream') {
                                         m = {}
                                         if (node.allProps === true) {
                                             m = RED.util.cloneMessage(msg)
@@ -324,74 +339,60 @@ module.exports = function (RED) {
                                             m.topic = msg.topic
                                             m.filename = msg.filename
                                         }
-                                        m.payload = bits[i]
+                                        m.payload = chunk
                                         m.parts = { index: count, ch, type, id: msg._msgid }
                                         count += 1
+                                        if (chunk.length < hwm) { // last chunk is smaller that high water mark = eof
+                                            getout = false
+                                            m.parts.count = count
+                                        }
                                         nodeSend(m)
                                     }
-                                    spare = bits[i]
+                                } else {
+                                    lines = Buffer.concat([lines, chunk])
                                 }
-                                if (node.format === 'stream') {
-                                    m = {}
-                                    if (node.allProps === true) {
-                                        m = RED.util.cloneMessage(msg)
-                                    } else {
-                                        m.topic = msg.topic
-                                        m.filename = msg.filename
-                                    }
-                                    m.payload = chunk
-                                    m.parts = { index: count, ch, type, id: msg._msgid }
-                                    count += 1
-                                    if (chunk.length < hwm) { // last chunk is smaller that high water mark = eof
-                                        getout = false
-                                        m.parts.count = count
-                                    }
-                                    nodeSend(m)
+                            }
+                        })
+                        .on('error', function (err) {
+                            node.error(err, msg)
+                            if (node.sendError) {
+                                const sendMessage = RED.util.cloneMessage(msg)
+                                delete sendMessage.payload
+                                sendMessage.error = err
+                                nodeSend(sendMessage)
+                            }
+                            nodeDone()
+                        })
+                        .on('end', function () {
+                            if (node.chunk === false) {
+                                if (node.format === 'utf8') {
+                                    msg.payload = decode(lines, node.encoding)
+                                } else { msg.payload = lines }
+                                nodeSend(msg)
+                            } else if (node.format === 'lines') {
+                                let m = {}
+                                if (node.allProps) {
+                                    m = RED.util.cloneMessage(msg)
+                                } else {
+                                    m.topic = msg.topic
+                                    m.filename = msg.filename
                                 }
-                            } else {
-                                lines = Buffer.concat([lines, chunk])
+                                m.payload = spare
+                                m.parts = {
+                                    index: count,
+                                    count: count + 1,
+                                    ch,
+                                    type,
+                                    id: msg._msgid
+                                }
+                                nodeSend(m)
+                            } else if (getout) { // last chunk same size as high water mark - have to send empty extra packet.
+                                const m = { parts: { index: count, count, ch, type, id: msg._msgid } }
+                                nodeSend(m)
                             }
-                        }
-                    })
-                    .on('error', function (err) {
-                        node.error(err, msg)
-                        if (node.sendError) {
-                            const sendMessage = RED.util.cloneMessage(msg)
-                            delete sendMessage.payload
-                            sendMessage.error = err
-                            nodeSend(sendMessage)
-                        }
-                        nodeDone()
-                    })
-                    .on('end', function () {
-                        if (node.chunk === false) {
-                            if (node.format === 'utf8') {
-                                msg.payload = decode(lines, node.encoding)
-                            } else { msg.payload = lines }
-                            nodeSend(msg)
-                        } else if (node.format === 'lines') {
-                            let m = {}
-                            if (node.allProps) {
-                                m = RED.util.cloneMessage(msg)
-                            } else {
-                                m.topic = msg.topic
-                                m.filename = msg.filename
-                            }
-                            m.payload = spare
-                            m.parts = {
-                                index: count,
-                                count: count + 1,
-                                ch,
-                                type,
-                                id: msg._msgid
-                            }
-                            nodeSend(m)
-                        } else if (getout) { // last chunk same size as high water mark - have to send empty extra packet.
-                            const m = { parts: { index: count, count, ch, type, id: msg._msgid } }
-                            nodeSend(m)
-                        }
-                        nodeDone()
-                    })
+                            nodeDone()
+                        })
+                }
             }
         })
         this.on('close', function () {

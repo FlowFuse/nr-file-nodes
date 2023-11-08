@@ -451,6 +451,34 @@ describe('File Nodes with file backed filer-server', function () {
                 n1.receive({ payload: 'envTest' })
             })
         })
+        it('should use JSONAta expression set in nodes typedInput', function (done) {
+            const realFileToTest = path.join(testFilesRealDir, 'abc')
+            const flow = [{ id: 'fileNode1', type: 'file', filename: '$join(["a","b","c"])', filenameType: 'jsonata', name: 'fileNode', appendNewline: true, overwriteFile: true, wires: [['helperNode1']] },
+                { id: 'helperNode1', type: 'helper' }]
+            helper.load(fileNode, flow, function () {
+                const n1 = helper.getNode('fileNode1')
+                const n2 = helper.getNode('helperNode1')
+
+                n2.on('input', function (msg) {
+                    try {
+                        msg.should.have.property('payload', 'exprTest')
+                        msg.should.have.property('filename', 'abc')
+
+                        const f = fs.readFileSync(realFileToTest).toString()
+                        if (os.type() !== 'Windows_NT') {
+                            f.should.equal('exprTest\n')
+                        } else {
+                            f.should.equal('exprTest\r\n')
+                        }
+                        done()
+                    } catch (e) {
+                        done(e)
+                    }
+                })
+
+                n1.receive({ payload: 'exprTest' })
+            })
+        })
 
         it('should be able to delete the file', function (done) {
             const realFileToTest = path.join(testFilesRealDir, fileToTest)
@@ -1191,6 +1219,7 @@ describe('File Nodes with file backed filer-server', function () {
             fs.mkdirSync(testFilesRealDir, { recursive: true })
         } catch (_error) { /* IGNORE */ }
         const fileToTest = relativePathToFile
+        const fileToTestJSONata = '$join(["50-file-", "test-file.txt"])'
         const fileToTest2 = '\t' + relativePathToFile + '\r\n'
         const wait = 150
 
@@ -1235,6 +1264,27 @@ describe('File Nodes with file backed filer-server', function () {
 
         it('should read in a file and output a utf8 string', function (done) {
             const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: fileToTest, format: 'utf8', wires: [['n2']] },
+                { id: 'n2', type: 'helper' }]
+            helper.load(fileNode, flow, function () {
+                const n1 = helper.getNode('fileInNode1')
+                const n2 = helper.getNode('n2')
+                n2.on('input', function (msg) {
+                    try {
+                        msg.should.have.property('payload')
+                        msg.payload.should.be.a.String()
+                        msg.payload.should.have.length(40)
+                        msg.payload.should.equal('File message line 1\nFile message line 2\n')
+                        done()
+                    } catch (err) {
+                        done(err)
+                    }
+                })
+                n1.receive({ payload: '' })
+            })
+        })
+
+        it('should read in a file when set via jsonata', function (done) {
+            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: fileToTestJSONata, filenameType: 'jsonata', format: 'utf8', wires: [['n2']] },
                 { id: 'n2', type: 'helper' }]
             helper.load(fileNode, flow, function () {
                 const n1 = helper.getNode('fileInNode1')
