@@ -1896,7 +1896,7 @@ describe('File Nodes with file backed filer-server', function () {
             })
         })
     })
-    describe.only('Proxy', function () {
+    describe('Proxy', function () {
         const { HttpProxyAgent } = require('http-proxy-agent')
         const { HttpsProxyAgent } = require('https-proxy-agent')
         const relativePathToFile = '50-file-test-file.txt'
