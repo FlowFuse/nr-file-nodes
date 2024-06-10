@@ -4,9 +4,10 @@
     "description": "Node-RED file nodes packaged for FlowFuse",
     "main": "index.js",
     "scripts": {
-        "test": "npm run test:files && npm run test:memory",
+        "test": "npm run test:files && npm run test:memory && npm run test:utils",
         "test:memory": "mocha 'test/memory_spec.js' --timeout 5000",
         "test:files": "mocha 'test/file_spec.js' --timeout 5000",
+        "test:utils": "mocha 'test/utils_spec.js' --timeout 5000",
         "lint": "eslint -c .eslintrc *.js",
         "lint:fix": "eslint -c .eslintrc *.js --fix"
     },
@@ -34,7 +35,9 @@
     "homepage": "https://github.com/FlowFuse/nr-file-nodes#readme",
     "dependencies": {
         "got": "11.8.5",
-        "iconv-lite": "0.6.3"
+        "iconv-lite": "0.6.3",
+        "http-proxy-agent": "^7.0.2",
+        "https-proxy-agent": "^7.0.4"
     },
     "engines": {
         "node": ">=16.x"
