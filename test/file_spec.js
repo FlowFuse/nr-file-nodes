@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+const should = require('should')
 const path = require('path')
 const fs = require('fs-extra')
 const os = require('os')
@@ -29,6 +30,7 @@ const testFilesDir = path.join('test', 'resources')
 const testFilesRealDir = path.join(cwd, testFilesDir, TeamID, ProjectID)
 const setup = require('./setup')
 const util = require('util')
+const utils = require('../utils.js')
 
 // Setup the test environment
 const driverType = 'localfs'
@@ -1891,6 +1893,115 @@ describe('File Nodes with file backed filer-server', function () {
 
             it('should read in a file with "tis620" encoding', function (done) {
                 checkReadWithEncoding('tis620', 'test', done)
+            })
+        })
+    })
+    describe('Proxy', function () {
+        const { HttpProxyAgent } = require('http-proxy-agent')
+        const { HttpsProxyAgent } = require('https-proxy-agent')
+        const relativePathToFile = '50-file-test-file.txt'
+        const resourcesDir = testFilesDir
+        try {
+            fs.mkdirSync(resourcesDir)
+        } catch (error) {
+            // ignore
+        }
+        const fileToTest = relativePathToFile
+
+        beforeEach(function (done) {
+            process.env.TEST_FILE = fileToTest
+            RED.settings.flowforge = {
+                teamID: TeamID,
+                projectID: ProjectID,
+                fileStore: {
+                    url: fileServerURL,
+                    token: 'test-token-1'
+                }
+            }
+            helper.startServer(done)
+        })
+
+        afterEach(function (done) {
+            delete RED.settings.fileWorkingDirectory
+            fs.removeSync(path.join(resourcesDir, 'file-out-node'))
+            helper.unload().then(function () {
+                // fs.unlinkSync(fileToTest);
+                helper.stopServer(done)
+            })
+            delete process.env.TEST_FILE
+            sinon.restore()
+        })
+        it('should not load proxy agents if env vars are not set', function (done) {
+            // spy utils.getHTTPProxyAgent to check if it is called and what it returns
+            const spy = sinon.spy(utils, 'getHTTPProxyAgent')
+            process.env.http_proxy = ''
+            process.env.https_proxy = ''
+            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: 'test', format: 'utf8' }]
+            helper.load(fileNode, flow, function () {
+                try {
+                    spy.called.should.be.true()
+                    spy.returned({}).should.be.true()
+                    done()
+                } catch (error) {
+                    done(error)
+                }
+            })
+        })
+        it('should load http proxy agent if http_proxy env var is set', function (done) {
+            // spy utils.getHTTPProxyAgent to check if it is called and what it returns
+            const spy = sinon.spy(utils, 'getHTTPProxyAgent')
+            process.env.http_proxy = 'http://localhost:8080'
+            process.env.https_proxy = ''
+            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: 'test', format: 'utf8' }]
+            helper.load(fileNode, flow, function () {
+                try {
+                    spy.called.should.be.true()
+                    const agent = spy.returnValues?.[0]
+                    should(agent).not.be.empty()
+                    agent.should.have.a.property('http').and.be.an.instanceOf(HttpProxyAgent)
+                    should(agent.https).be.undefined()
+                    done()
+                } catch (error) {
+                    done(error)
+                }
+            })
+        })
+        it('should load https proxy agent if https_proxy env var is set', function (done) {
+            // spy utils.getHTTPProxyAgent to check if it is called and what it returns
+            const spy = sinon.spy(utils, 'getHTTPProxyAgent')
+            process.env.http_proxy = ''
+            process.env.https_proxy = 'http://localhost:8080'
+            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: 'test', format: 'utf8' }]
+            helper.load(fileNode, flow, function () {
+                try {
+                    spy.called.should.be.true()
+                    const agent = spy.returnValues?.[0]
+                    should(agent).not.be.empty()
+                    agent.should.have.a.property('https').and.be.an.instanceOf(HttpsProxyAgent)
+                    should(agent.http).be.undefined()
+                    done()
+                } catch (error) {
+                    done(error)
+                }
+            })
+        })
+        it('should load both http and https proxy agents if both env vars are set', function (done) {
+            // spy utils.getHTTPProxyAgent to check if it is called and what it returns
+            const spy = sinon.spy(utils, 'getHTTPProxyAgent')
+            process.env.http_proxy = 'http://localhost:8080'
+            process.env.https_proxy = 'http://localhost:8081'
+            const flow = [{ id: 'fileInNode1', type: 'file in', name: 'fileInNode', filename: 'test', format: 'utf8' }]
+            helper.load(fileNode, flow, function () {
+                try {
+                    spy.called.should.be.true()
+                    const agent = spy.returnValues?.[0]
+                    should(agent).not.be.empty()
+                    agent.should.have.a.property('http').and.be.an.instanceOf(HttpProxyAgent)
+                    agent.should.have.a.property('https').and.be.an.instanceOf(HttpsProxyAgent)
+                    done()
+                } catch (error) {
+                    done(error)
+                }
             })
         })
     })
