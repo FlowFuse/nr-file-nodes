@@ -15,8 +15,7 @@
  **/
 
 const Stream = require('stream')
-const utils = require('./utils')
-const got = require('got').default
+const got = require('got')
 
 module.exports = function (RED, _teamID, _projectID, _token) {
     'use strict'
@@ -37,8 +36,7 @@ module.exports = function (RED, _teamID, _projectID, _token) {
         },
         retry: {
             limit: 0
-        },
-        agent: utils.getHTTPProxyAgent({ timeout: 3000 })
+        }
     })
 
     const normaliseError = (err, filename) => {
