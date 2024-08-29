@@ -1,3 +1,7 @@
+#### 0.0.7: Release
+
+ - Bump axios from 1.6.8 to 1.7.4 (#68) @dependabot
+
 #### 0.0.6: Release
 
  - Bump ws and node-red (#64) @dependabot
