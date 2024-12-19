@@ -1,3 +1,17 @@
+#### 0.0.8: Release
+
+ - Bump flowfuse/github-actions-workflows from 0.37.0 to 0.38.0 (#80)
+ - Bump flowfuse/github-actions-workflows from 0.36.0 to 0.37.0 (#79)
+ - Bump flowfuse/github-actions-workflows from 0.34.0 to 0.36.0 (#78)
+ - Bump flowfuse/github-actions-workflows from 0.30.0 to 0.34.0 (#76)
+ - Bump flowfuse/github-actions-workflows from 0.29.0 to 0.30.0 (#74)
+ - Bump flowfuse/github-actions-workflows from 0.28.0 to 0.29.0 (#71)
+ - Bump cookie, light-my-request, node-red and express (#77) @app/dependabot
+ - Bump serve-static, node-red and express (#72) @app/dependabot
+ - Bump flowfuse/github-actions-workflows from 0.1.0 to 0.28.0 (#70) @app/dependabot
+ - Bump JS-DevTools/npm-publish from 2 to 3 (#53) @app/dependabot
+ - Bump tibdex/github-app-token from 1 to 2 (#51) @app/dependabot
+
 #### 0.0.7: Release
 
  - Bump axios from 1.6.8 to 1.7.4 (#68) @dependabot
