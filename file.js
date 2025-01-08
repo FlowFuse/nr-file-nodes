@@ -32,6 +32,10 @@ module.exports = function (RED) {
     const path = require('path')
     const iconv = require('iconv-lite')
 
+    function fakePpFunction1 () {
+        return 'fakePpFunction1'
+    }
+
     function encode (data, enc) {
         if (enc !== 'none') {
             return iconv.encode(data, enc)
