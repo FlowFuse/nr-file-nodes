@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /**
  * Copyright JS Foundation and other contributors, http://js.foundation
  *
