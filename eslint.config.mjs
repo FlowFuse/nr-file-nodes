@@ -36,7 +36,7 @@ export default [
             globals: {
                 ...globals.browser,
                 ...globals.jquery,
-                'RED': 'readonly'
+                RED: 'readonly'
             }
         }
     },
