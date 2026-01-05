@@ -29,7 +29,7 @@ module.exports = function (RED, _teamID, _projectID, _token) {
         prefixUrl: `${fileStoreURL}/v1/files/${teamID}/${projectID}`,
         headers: {
             'user-agent': 'FlowForge Node-RED File Nodes for Storage Server',
-            authorization: 'Bearer ' + projectToken
+            'authorization': 'Bearer ' + projectToken
         },
         timeout: {
             request: 3000
@@ -132,7 +132,7 @@ module.exports = function (RED, _teamID, _projectID, _token) {
             const options = {
                 headers: {
                     'Content-Type': 'application/octet-stream',
-                    FF_MODE: 'append'
+                    'FF_MODE': 'append'
                 },
                 body: buffer
             }
