@@ -228,7 +228,7 @@
         icon: 'file-out.svg',
         label: function () {
             let fn = this.filename
-            if (this.filenameType != 'str' && this.filenameType != 'env') { fn = '' }
+            if (this.filenameType !== 'str' && this.filenameType !== 'env') { fn = '' }
             if (this.filenameType === 'env') { fn = 'env.' + fn }
             if (this.overwriteFile === 'delete') {
                 return this.name || this._('file.label.deletelabel', { file: fn })
@@ -257,9 +257,9 @@
                 types: [{ label: RED._('node-red:file.label.path'), value: 'str', icon: '' }, 'msg', 'jsonata', 'env'],
                 typeField: $('#node-input-filenameType')
             })
-            if (typeof node.filenameType == 'undefined') {
+            if (typeof node.filenameType === 'undefined') {
                 // existing node AND filenameType is not set - inplace (compatible) upgrade to new typedInput
-                if (node.filename == '') { // was using empty value to denote msg.filename - set typedInput to match
+                if (node.filename === '') { // was using empty value to denote msg.filename - set typedInput to match
                     node.filename = 'filename'
                     node.filenameType = 'msg'
                     $('#node-input-filename').typedInput('type', node.filenameType)
@@ -340,7 +340,7 @@
         icon: 'file-in.svg',
         label: function () {
             let fn = this.filename
-            if (this.filenameType != 'str' && this.filenameType != 'env') { fn = '' }
+            if (this.filenameType !== 'str' && this.filenameType !== 'env') { fn = '' }
             if (this.filenameType === 'env') { fn = 'env.' + fn }
             return this.name || fn || this._('file.label.read')
         },
@@ -361,9 +361,9 @@
                 types: [{ label: RED._('node-red:file.label.path'), value: 'str', icon: '' }, 'msg', 'jsonata', 'env'],
                 typeField: $('#node-input-filenameType')
             })
-            if (typeof node.filenameType == 'undefined') {
+            if (typeof node.filenameType === 'undefined') {
                 // existing node AND filenameType is not set - inplace (compatible) upgrade to new typedInput
-                if (node.filename == '') { // was using empty value to denote msg.filename - set typedInput to match
+                if (node.filename === '') { // was using empty value to denote msg.filename - set typedInput to match
                     node.filename = 'filename'
                     node.filenameType = 'msg'
                     $('#node-input-filename').typedInput('type', node.filenameType)

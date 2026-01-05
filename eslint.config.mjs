@@ -58,7 +58,7 @@ export default [
             'no-console': ['error', { allow: ['debug', 'info', 'warn', 'error'] }],
 
             'camelcase': 'off',
-            'eqeqeq': 'off',
+            'eqeqeq': 'error',
             'no-empty': ['error', { 'allowEmptyCatch': true }],
             'no-unused-vars': ['error', {
                 'args': 'none',
