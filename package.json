@@ -1,6 +1,6 @@
 {
     "name": "@flowfuse/nr-file-nodes",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "Node-RED file nodes packaged for FlowFuse",
     "main": "index.js",
     "scripts": {
