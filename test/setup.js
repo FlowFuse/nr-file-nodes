@@ -68,7 +68,7 @@ driver:
     root: ${config.root || path.join('test', 'resources')}
 `
     }
-    const app = await require('@flowforge/file-server')
+    const app = await require('@flowfuse/file-server')
     return app
 }
 
