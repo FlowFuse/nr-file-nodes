@@ -22,7 +22,7 @@ jobs:
         run: |
           VERSION = `npm info . --json version | sed -e 's/"//g'`
           echo "::set-output name=version::$VERSION"
-      - uses: flowfuse/github-actions-workflows/actions/update-nr-flows@latest # need to know what to put here
+      - uses: flowfuse/github-actions-workflows/actions/update-nr-flows@b46fc1068ef94834df206465cd9ce9b603998d06 # pre v0.49.0
         with:
           package: nr-file-nodes
           version: ${{ steps.output.getVersion.version }}
