@@ -20,8 +20,8 @@ jobs:
       - name: getVersion
         shell: bash
         run: |
-          VERSION = `npm info . --json version | sed -e 's/"//g'`
-          echo "::set-output name=version::$VERSION"
+          VERSION=$(npm info . --json version | sed -e 's/"//g')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - uses: flowfuse/github-actions-workflows/actions/update-nr-flows@b46fc1068ef94834df206465cd9ce9b603998d06 # pre v0.49.0
         with:
           package: nr-file-nodes
