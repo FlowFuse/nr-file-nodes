@@ -17,3 +17,12 @@ jobs:
         with:
           token: ${{ secrets.NPM_PUBLISH_TOKEN }}
           access: public
+      - name: getVersion
+        shell: bash
+        run: |
+          VERSION = `npm info . --json version | sed -e 's/"//g'`
+          echo "::set-output name=version::$VERSION"
+      - uses: flowfuse/github-actions-workflows/actions/update-nr-flows@latest # need to know what to put here
+        with:
+          package: nr-file-nodes
+          version: ${{ steps.output.getVersion.version }}
