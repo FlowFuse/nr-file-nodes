@@ -18,6 +18,7 @@ jobs:
           token: ${{ secrets.NPM_PUBLISH_TOKEN }}
           access: public
       - name: getVersion
+        id: getVersion
         shell: bash
         run: |
           VERSION=$(npm info . --json version | sed -e 's/"//g')
