@@ -26,4 +26,4 @@ jobs:
       - uses: flowfuse/github-actions-workflows/actions/update-nr-flows@b46fc1068ef94834df206465cd9ce9b603998d06 # pre v0.49.0
         with:
           package: nr-file-nodes
-          version: ${{ steps.output.getVersion.version }}
+          version: ${{ steps.getVersion.outputs.version }}
