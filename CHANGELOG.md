@@ -1,3 +1,37 @@
+ #### 0.0.10: Release
+
+- Bump actions/create-github-app-token from 2.2.1 to 3.0.0 (#153)
+- Bump actions/setup-node from 6.2.0 to 6.3.0 (#149)
+- Bump benc-uk/workflow-dispatch from 1.2.4 to 1.3.1 (#142)
+- Bump flowfuse/github-actions-workflows/.github/workflows/publish_node_package.yml from 0.49.0 to 0.52.0 (#146)
+- Bump flowfuse/github-actions-workflows/.github/workflows/build_node_package.yml from 0.49.0 to 0.52.0 (#147)
+- Bump flowfuse/github-actions-workflows/.github/workflows/sast_scan.yaml from 0.49.0 to 0.52.0 (#145)
+- Bump flowfuse/github-actions-workflows/.github/workflows/sast_scan.yaml (#140)
+- Bump flowfuse/github-actions-workflows/.github/workflows/publish_node_package.yml (#139)
+- Bump flowfuse/github-actions-workflows/.github/workflows/build_node_package.yml (#138)
+- Remove GHA to update public catalogue (#136)
+- Add missing scope to package name (#135)
+- Add action to bump NR catalogue version (#134)
+- Bump JS-DevTools/npm-publish from 4.1.4 to 4.1.5 (#130)
+- Bump flowfuse/github-actions-workflows/.github/workflows/publish_node_package.yml (#131)
+- Bump flowfuse/github-actions-workflows/.github/workflows/sast_scan.yaml (#132)
+- Bump flowfuse/github-actions-workflows/.github/workflows/build_node_package.yml (#133)
+- Update file-server dependency (#159) @hardillb
+- Bump multer and node-red (#163) @app/dependabot
+- Bump picomatch (#158) @app/dependabot
+- ci: Use NodeJS v24 to build package (#157) @ppawlowski
+- ci: Use NodeJS v24 as a default GitHub Actions runtime (#156) @ppawlowski
+- Bump flatted from 3.3.3 to 3.4.2 (#154) @app/dependabot
+- Bump fast-xml-parser and @aws-sdk/xml-builder (#155) @app/dependabot
+- ci: replace `tibdex/github-app-token` with `actions/create-github-app-token` (#152) @ppawlowski
+- ci: add concurrency to publish workflow (#151) @ppawlowski
+- Bump sequelize from 6.37.7 to 6.37.8 (#150) @app/dependabot
+- Bump fast-xml-parser and @aws-sdk/xml-builder (#148) @app/dependabot
+- Bump minimatch (#144) @app/dependabot
+- Bump dottie from 2.0.6 to 2.0.7 (#143) @app/dependabot
+- Bump fast-xml-parser and @aws-sdk/client-s3 (#141) @app/dependabot
+- Bump qs from 6.14.1 to 6.14.2 (#137) @app/dependabot 
+
  #### 0.0.9: Release
  
  - Move from flowforge/file-server to flowfuse/file-server
