@@ -50,7 +50,7 @@
         "mocha": "^11.7.5",
         "mocha-cli": "^1.0.1",
         "neostandard": "^0.12.2",
-        "node-red": "^4.1.10",
+        "node-red": "^4.1.8",
         "node-red-node-test-helper": "^0.3.4",
         "sinon": "^14.0.2"
     }
