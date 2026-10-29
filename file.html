@@ -226,7 +226,7 @@
         inputs: 1,
         outputs: 1,
         icon: 'file-out.svg',
-        label: function () {
+        label () {
             let fn = this.filename
             if (this.filenameType !== 'str' && this.filenameType !== 'env') { fn = '' }
             if (this.filenameType === 'env') { fn = 'env.' + fn }
@@ -237,10 +237,10 @@
             }
         },
         paletteLabel: RED._('node-red:file.label.write'),
-        labelStyle: function () {
+        labelStyle () {
             return this.name ? 'node_label_italic' : ''
         },
-        oneditprepare: function () {
+        oneditprepare () {
             const node = this
             const encSel = $('#node-input-encoding')
             const label = node._('file.encoding.none')
@@ -324,7 +324,7 @@
         color: 'BurlyWood',
         inputs: 1,
         outputs: 1,
-        outputLabels: function (i) {
+        outputLabels (i) {
             let l
             if (this.format === 'utf8') {
                 l = 'file.label.utf8String'
@@ -338,17 +338,17 @@
             return this._(l)
         },
         icon: 'file-in.svg',
-        label: function () {
+        label () {
             let fn = this.filename
             if (this.filenameType !== 'str' && this.filenameType !== 'env') { fn = '' }
             if (this.filenameType === 'env') { fn = 'env.' + fn }
             return this.name || fn || this._('file.label.read')
         },
         paletteLabel: RED._('node-red:file.label.read'),
-        labelStyle: function () {
+        labelStyle () {
             return this.name ? 'node_label_italic' : ''
         },
-        oneditprepare: function () {
+        oneditprepare () {
             const node = this
             const encSel = $('#node-input-encoding')
             const label = node._('file.encoding.none')
