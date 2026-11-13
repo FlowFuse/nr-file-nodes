@@ -52,7 +52,7 @@
         "neostandard": "^0.14.1",
         "node-red": "^5.0.9",
         "node-red-node-test-helper": "^0.3.4",
-        "sinon": "^14.0.2"
+        "sinon": "^22.1.0"
     },
     "overrides": {
         "uuid@8": "11.1.1"
