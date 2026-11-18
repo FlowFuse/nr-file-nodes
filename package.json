@@ -34,7 +34,7 @@
     "homepage": "https://github.com/FlowFuse/nr-file-nodes#readme",
     "dependencies": {
         "got": "11.8.5",
-        "iconv-lite": "0.6.3"
+        "iconv-lite": "0.7.3"
     },
     "engines": {
         "node": ">=16.x"
